@@ -60,13 +60,7 @@ exercise 1
     // Getters and setters
 }
 
-// Opportunity.java
-@Entity
-@Table(name = "opportunities")
-public class Opportunity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
@@ -80,13 +74,7 @@ public class Opportunity {
     // Getters and setters
 }
 
-// Interaction.java
-@Entity
-@Table(name = "interactions")
-public class Interaction {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
