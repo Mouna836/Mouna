@@ -47,13 +47,7 @@ exercise 1
     // Getters and setters
 }
 
-// Contact.java
-@Entity
-@Table(name = "contacts")
-public class Contact {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
