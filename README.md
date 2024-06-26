@@ -31,3 +31,82 @@ JOIN salaries s ON e.employee_id = s.employee_id
 JOIN departments d ON e.department_id = d.department_id
 ORDER BY s.salary DESC
 LIMIT 100;
+
+programming assesment
+
+exercise 1
+// Customer.java
+@Entity
+@Table(name = "customers")
+public class Customer {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String name;
+
+    private String email;
+    private String phone;
+    private String address;
+
+    // Getters and setters
+}
+
+// Contact.java
+@Entity
+@Table(name = "contacts")
+public class Contact {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
+
+    private String name;
+    private String email;
+    private String phone;
+
+    // Getters and setters
+}
+
+// Opportunity.java
+@Entity
+@Table(name = "opportunities")
+public class Opportunity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
+
+    private String title;
+    private String description;
+    private BigDecimal amount;
+    private String stage; // e.g., prospecting, qualified, proposal, closed-won, closed-lost
+
+    // Getters and setters
+}
+
+// Interaction.java
+@Entity
+@Table(name = "interactions")
+public class Interaction {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
+
+    private LocalDateTime interactionDateTime;
+    private String type; // call, meeting, email
+    private String notes;
+
+    // Getters and setters
+}
