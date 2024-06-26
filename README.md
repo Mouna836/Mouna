@@ -1,3 +1,5 @@
+EXERCISE 1
+
 CREATE TABLE departments (
     department_id INT PRIMARY KEY,
     department_name VARCHAR(100) NOT NULL
@@ -11,6 +13,8 @@ CREATE TABLE employees (
     hire_date DATE NOT NULL,
     FOREIGN KEY (department_id) REFERENCES departments(department_id)
 );
+
+EERCISE 2
 
 CREATE TABLE salaries (
     employee_id INT,
