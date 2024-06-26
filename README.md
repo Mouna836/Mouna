@@ -14,8 +14,6 @@ CREATE TABLE employees (
     FOREIGN KEY (department_id) REFERENCES departments(department_id)
 );
 
-EERCISE 2
-
 CREATE TABLE salaries (
     employee_id INT,
     salary DECIMAL(10, 2) NOT NULL,
@@ -25,7 +23,7 @@ CREATE TABLE salaries (
     PRIMARY KEY (employee_id, from_date)
 );
 
-
+EXERCISE 2
 
 SELECT e.employee_id, e.first_name, e.last_name, d.department_name, s.salary
 FROM employees e
