@@ -35,13 +35,7 @@ LIMIT 100;
 programming assesment
 
 exercise 1
-// Customer.java
-@Entity
-@Table(name = "customers")
-public class Customer {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+
 
     @Column(nullable = false)
     private String name;
