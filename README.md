@@ -35,56 +35,90 @@ LIMIT 100;
 programming assesment
 
 exercise 1
+@Entity
+public class Customer {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+    private String email;
+    private String phone;
+    private String address;
+    // Getters and setters
+}
 
-CREATE TABLE Customers (
-    CustomerID INT PRIMARY KEY AUTO_INCREMENT,
-    FirstName VARCHAR(50) NOT NULL,
-    LastName VARCHAR(50) NOT NULL,
-    Email VARCHAR(100) NOT NULL UNIQUE,
-    PhoneNumber VARCHAR(20),
-    Address VARCHAR(255),
-    City VARCHAR(50),
-    State VARCHAR(50),
-    ZipCode VARCHAR(10),
-    Country VARCHAR(50),
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-CREATE TABLE Contacts (
-    ContactID INT PRIMARY KEY AUTO_INCREMENT,
-    CustomerID INT,
-    FirstName VARCHAR(50) NOT NULL,
-    LastName VARCHAR(50) NOT NULL,
-    Email VARCHAR(100) NOT NULL,
-    PhoneNumber VARCHAR(20),
-    Relationship VARCHAR(50),
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
-);
-CREATE TABLE Opportunities (
-    OpportunityID INT PRIMARY KEY AUTO_INCREMENT,
-    CustomerID INT,
-    Title VARCHAR(100) NOT NULL,
-    Description TEXT,
-    Stage VARCHAR(50),
-    Value DECIMAL(10, 2),
-    CloseDate DATE,
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
-);
-CREATE TABLE Interactions (
-    InteractionID INT PRIMARY KEY AUTO_INCREMENT,
-    CustomerID INT,
-    InteractionType VARCHAR(50) NOT NULL, -- e.g., Call, Meeting, Email
-    InteractionDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Notes TEXT,
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
-);
+@Entity
+public class Contact {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private Long customerId;
+    private String name;
+    private String email;
+    private String phone;
+    // Getters and setters
+}
 
-   
+@Entity
+public class Opportunity {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private Long customerId;
+    private String description;
+    private String stage;
+    private BigDecimal amount;
+    // Getters and setters
+}
 
+@Entity
+public class Interaction {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private Long customerId;
+    private String type;
+    private Timestamp date;
+    private String notes;
+    // Getters and setters
+}
+public interface CustomerRepository extends JpaRepository<Customer, Long> {}
+public interface ContactRepository extends JpaRepository<Contact, Long> {}
+public interface OpportunityRepository extends JpaRepository<Opportunity, Long> {}
+public interface InteractionRepository extends JpaRepository<Interaction, Long> {}
+@Service
+public class CustomerService {
+    @Autowired private CustomerRepository customerRepository;
+    // Methods for add, edit, delete, view customer records
+}
 
+@Service
+public class InteractionService {
+    @Autowired private InteractionRepository interactionRepository;
+    // Methods for logging interactions
+}
 
+@Service
+public class OpportunityService {
+    @Autowired private OpportunityRepository opportunityRepository;
+    // Methods for tracking sales opportunities
+}
+@RestController
+@RequestMapping("/api/customers")
+public class CustomerController {
+    @Autowired private CustomerService customerService;
+    // CRUD APIs
+}
+
+@RestController
+@RequestMapping("/api/interactions")
+public class InteractionController {
+    @Autowired private InteractionService interactionService;
+    // CRUD APIs
+}
+
+@RestController
+@RequestMapping("/api/opportunities")
+public class OpportunityController {
+    @Autowired private OpportunityService opportunityService;
+    // CRUD APIs
+}
    
     
 
