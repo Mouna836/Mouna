@@ -36,53 +36,57 @@ programming assesment
 
 exercise 1
 
+CREATE TABLE Customers (
+    CustomerID INT PRIMARY KEY AUTO_INCREMENT,
+    FirstName VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    Email VARCHAR(100) NOT NULL UNIQUE,
+    PhoneNumber VARCHAR(20),
+    Address VARCHAR(255),
+    City VARCHAR(50),
+    State VARCHAR(50),
+    ZipCode VARCHAR(10),
+    Country VARCHAR(50),
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE Contacts (
+    ContactID INT PRIMARY KEY AUTO_INCREMENT,
+    CustomerID INT,
+    FirstName VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    Email VARCHAR(100) NOT NULL,
+    PhoneNumber VARCHAR(20),
+    Relationship VARCHAR(50),
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+CREATE TABLE Opportunities (
+    OpportunityID INT PRIMARY KEY AUTO_INCREMENT,
+    CustomerID INT,
+    Title VARCHAR(100) NOT NULL,
+    Description TEXT,
+    Stage VARCHAR(50),
+    Value DECIMAL(10, 2),
+    CloseDate DATE,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+CREATE TABLE Interactions (
+    InteractionID INT PRIMARY KEY AUTO_INCREMENT,
+    CustomerID INT,
+    InteractionType VARCHAR(50) NOT NULL, -- e.g., Call, Meeting, Email
+    InteractionDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Notes TEXT,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
 
-    @Column(nullable = false)
-    private String name;
-
-    private String email;
-    private String phone;
-    private String address;
-
-    // Getters and setters
-}
+   
 
 
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
-
-    private String name;
-    private String email;
-    private String phone;
-
-    // Getters and setters
-}
+   
+    
 
 
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
-
-    private String title;
-    private String description;
-    private BigDecimal amount;
-    private String stage; // e.g., prospecting, qualified, proposal, closed-won, closed-lost
-
-    // Getters and setters
-}
-
-
-
-    @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
-
-    private LocalDateTime interactionDateTime;
-    private String type; // call, meeting, email
-    private String notes;
-
-    // Getters and setters
-}
