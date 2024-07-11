@@ -35,6 +35,64 @@ LIMIT 100;
 programming assesment
 
 exercise 1
+Sure! Let's break down and describe each part of the provided example for a Customer Relationship Management (CRM) system.
+
+1. Database Schema Design
+The database schema includes four tables:
+
+customers: Stores customer information.
+contacts: Stores contact information related to customers.
+opportunities: Stores sales opportunities related to customers.
+interactions: Stores interaction records with customers.
+SQL Schema
+
+CREATE TABLE customers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    phone VARCHAR(20),
+    address TEXT
+);
+
+CREATE TABLE contacts (
+    id SERIAL PRIMARY KEY,
+    customer_id INT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    phone VARCHAR(20),
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
+);
+
+CREATE TABLE opportunities (
+    id SERIAL PRIMARY KEY,
+    customer_id INT NOT NULL,
+    description TEXT NOT NULL,
+    stage VARCHAR(50) NOT NULL,
+    amount DECIMAL(10, 2),
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
+);
+
+CREATE TABLE interactions (
+    id SERIAL PRIMARY KEY,
+    customer_id INT NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    date TIMESTAMP NOT NULL,
+    notes TEXT,
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
+);
+2. API Development with Spring Boot
+The Spring Boot application includes the following components:
+
+Entities: Define the structure of the data stored in the database.
+Repositories: Provide CRUD operations for each entity.
+Controllers: Define RESTful APIs for managing customer records, contacts, opportunities, and interactions.
+Entity Classes
+Customer: Represents a customer in the CRM.
+Contact: Represents a contact related to a customer.
+Opportunity: Represents a sales opportunity related to a customer.
+Interaction: Represents an interaction with a customer.
+java
+
 @Entity
 public class Customer {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -78,90 +136,219 @@ public class Interaction {
     private String notes;
     // Getters and setters
 }
+Repositories
+Provide CRUD operations for each entity.
+JAVA
+
 public interface CustomerRepository extends JpaRepository<Customer, Long> {}
 public interface ContactRepository extends JpaRepository<Contact, Long> {}
 public interface OpportunityRepository extends JpaRepository<Opportunity, Long> {}
 public interface InteractionRepository extends JpaRepository<Interaction, Long> {}
-@Service
-public class CustomerService {
-    @Autowired private CustomerRepository customerRepository;
-    // Methods for add, edit, delete, view customer records
-}
 
-@Service
-public class InteractionService {
-    @Autowired private InteractionRepository interactionRepository;
-    // Methods for logging interactions
-}
+Controllers
+Define RESTful APIs for managing customer records.
+JAVA
 
-@Service
-public class OpportunityService {
-    @Autowired private OpportunityRepository opportunityRepository;
-    // Methods for tracking sales opportunities
-}
 @RestController
-@RequestMapping("/api/customers")
+@RequestMapping("/customers")
 public class CustomerController {
-    @Autowired private CustomerService customerService;
-    // CRUD APIs
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @GetMapping
+    public List<Customer> getAllCustomers() {
+        return customerRepository.findAll();
+    }
+
+    @PostMapping
+    public Customer createCustomer(@RequestBody Customer customer) {
+        return customerRepository.save(customer);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @RequestBody Customer customerDetails) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found for this id :: " + id));
+
+        customer.setName(customerDetails.getName());
+        customer.setEmail(customerDetails.getEmail());
+        customer.setPhone(customerDetails.getPhone());
+        customer.setAddress(customerDetails.getAddress());
+        final Customer updatedCustomer = customerRepository.save(customer);
+        return ResponseEntity.ok(updatedCustomer);
+    }
+
+    @DeleteMapping("/{id}")
+    public Map<String, Boolean> deleteCustomer(@PathVariable Long id) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found for this id :: " + id));
+
+        customerRepository.delete(customer);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("deleted", Boolean.TRUE);
+        return response;
+    }
 }
 
-@RestController
-@RequestMapping("/api/interactions")
-public class InteractionController {
-    @Autowired private InteractionService interactionService;
-    // CRUD APIs
+3. Frontend Development with React
+The React application includes the following components:
+
+CustomerList.js: Displays a list of customers.
+CustomerForm.js: Provides a form to add or edit a customer.
+Dashboard.js: Displays key metrics like the number of opportunities, stages, and customer interaction history.
+CustomerList.js
+Fetches and displays a list of customers.
+
+javascript
+
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+function CustomerList() {
+    const [customers, setCustomers] = useState([]);
+
+    useEffect(() => {
+        axios.get('/customers')
+            .then(response => {
+                setCustomers(response.data);
+            })
+            .catch(error => {
+                console.error("There was an error fetching the customers!", error);
+            });
+    }, []);
+
+    return (
+        <div>
+            <h2>Customer List</h2>
+            <ul>
+                {customers.map(customer => (
+                    <li key={customer.id}>{customer.name}</li>
+                ))}
+            </ul>
+        </div>
+    );
 }
 
-@RestController
-@RequestMapping("/api/opportunities")
-public class OpportunityController {
-    @Autowired private OpportunityService opportunityService;
-    // CRUD APIs
-}
+export default CustomerList;
+CustomerForm.js
+Provides a form to add or edit a customer.
 
 
-   Explanation:
+//HTM
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CRM System</title>
+    <script>
+        function loadCustomers() {
+            fetch('/api/customers')
+                .then(response => response.json())
+                .then(data => {
+                    let customerList = document.getElementById('customer-list');
+                    customerList.innerHTML = '';
+                    data.forEach(customer => {
+                        let listItem = document.createElement('li');
+                        listItem.textContent = customer.name;
+                        customerList.appendChild(listItem);
+                    });
+                });
+        }
 
-To execute this setup effectively, follow these steps:
+        document.addEventListener('DOMContentLoaded', loadCustomers);
+    </script>
+</head>
+<body>
+    <h1>CRM System</h1>
+    <h2>Customers</h2>
+    <ul id="customer-list"></ul>
+</body>
+</html>
 
-1.Database Configuration:
+Explanation:
 
-Ensure your database (e.g., MySQL, PostgreSQL) is set up and running.
-Update application.properties or application.yml with your database connection details.
+1. Database Schema Design
+Tables:
+Customers:
 
-2.Entity Classes:
+customer_id (Primary Key)
+name
+email
+phone
+address
+created_at
+updated_at
+Contacts:
 
-Verify that your Customer, Contact, Opportunity, and Interaction classes are correctly annotated with @Entity.
-Each entity should have a primary key (@Id) annotated with @GeneratedValue(strategy = GenerationType.IDENTITY) for auto-generation.
+contact_id (Primary Key)
+customer_id (Foreign Key to Customers)
+name
+email
+phone
+position
+created_at
+updated_at
+Opportunities:
 
-3.Repository Interfaces:
+opportunity_id (Primary Key)
+customer_id (Foreign Key to Customers)
+name
+amount
+stage (e.g., prospecting, negotiation, closed-won, closed-lost)
+close_date
+created_at
+updated_at
+Interactions:
 
-Confirm that CustomerRepository, ContactRepository, OpportunityRepository, and InteractionRepository extend JpaRepository.
-These interfaces provide CRUD operations and other query methods out-of-the-box.
+interaction_id (Primary Key)
+customer_id (Foreign Key to Customers)
+contact_id (Foreign Key to Contacts, optional)
+type (call, meeting, email)
+description
+interaction_date
+created_at
+updated_at
+Relationships:
+Customers to Contacts: One-to-Many (One customer can have multiple contacts).
+Customers to Opportunities: One-to-Many (One customer can have multiple opportunities).
+Customers to Interactions: One-to-Many (One customer can have multiple interactions).
+2. RESTful API Development
+API Endpoints:
+Customers:
 
-4.Service Classes:
+GET /api/customers: Get all customers.
+GET /api/customers/{customer_id}: Get a specific customer.
+POST /api/customers: Create a new customer.
+PUT /api/customers/{customer_id}: Update a customer.
+DELETE /api/customers/{customer_id}: Delete a customer.
+Contacts:
 
-CustomerService, InteractionService, and OpportunityService are annotated with @Service and autowire their respective repositories (@Autowired).
-Implement business logic methods (add, edit, delete, view, etc.) in these services using repository methods.
+GET /api/contacts/{customer_id}: Get contacts for a specific customer.
+POST /api/contacts/{customer_id}: Create a new contact for a customer.
+PUT /api/contacts/{contact_id}: Update a contact.
+DELETE /api/contacts/{contact_id}: Delete a contact.
+Opportunities:
 
-5.Controller Classes:
+GET /api/opportunities/{customer_id}: Get opportunities for a specific customer.
+POST /api/opportunities/{customer_id}: Create a new opportunity for a customer.
+PUT /api/opportunities/{opportunity_id}: Update an opportunity.
+DELETE /api/opportunities/{opportunity_id}: Delete an opportunity.
+Interactions:
 
-CustomerController, InteractionController, and OpportunityController are annotated with @RestController and @RequestMapping for their respective API endpoints (/api/customers, /api/interactions, /api/opportunities).
-Autowire the respective service classes (@Autowired) and implement CRUD APIs using HTTP methods (GET, POST, PUT, DELETE).
+GET /api/interactions/{customer_id}: Get interactions for a specific customer.
+POST /api/interactions/{customer_id}: Log a new interaction for a customer.
+PUT /api/interactions/{interaction_id}: Update an interaction.
+DELETE /api/interactions/{interaction_id}: Delete an interaction.
+3. Frontend Interface
+Functionality:
+Customer Management: CRUD operations for customers and their contacts.
+Interaction Logging: Form to log interactions (calls, meetings, emails).
+Opportunity Tracking: CRUD operations for opportunities, displaying stages and close dates.
+Dashboard: Display key metrics (number of opportunities, stages breakdown, interaction history).
+Technologies:
+Frameworks: Use frameworks like React.js for frontend development.
+UI Libraries: Bootstrap or Material UI for responsive design.
+API Integration: Axios or Fetch API for consuming RESTful APIs.
 
-6.Testing and Deployment:
 
-Test your APIs using tools like Postman or curl to verify functionality (create, read, update, delete operations).
-Ensure error handling and validation are implemented where necessary.
-Deploy your application to your preferred environment (e.g., local server, cloud platform).
 
-7.Security Considerations:
 
-Implement security measures such as authentication and authorization (e.g., using Spring Security) to protect your APIs from unauthorized access.
-
-8.Monitoring and Maintenance:
-
-Set up logging and monitoring to track API usage and errors.
-Schedule regular maintenance to ensure database performance and application stability.
-By following these steps, you can effectively set up and execute your Spring Boot application with CRUD operations for Customer, Interaction, and Opportunity entities, organized into separate layers (controller, service, repository) for clear separation of concerns and maintainability.
