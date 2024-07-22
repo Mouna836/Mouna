@@ -40,10 +40,6 @@ LIMIT 100;
 
 
 
-Frameworks: Use frameworks like React.js for frontend development.
-UI Libraries: Bootstrap or Material UI for responsive design.
-API Integration: Axios or Fetch API for consuming RESTful APIs.
-
 
 
 
